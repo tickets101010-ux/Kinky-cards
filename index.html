@@ -9,38 +9,109 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Kinky Cards</title>
+<title>Kinky Cards — Digital Game</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#080506;color:#fff;font-family:system-ui,-apple-system,sans-serif}
-body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-.app{height:100%;display:flex;flex-direction:column}
-header{flex:0 0 auto;text-align:center;padding:10px 12px 8px;background:linear-gradient(180deg,#2a1119,#10070a);border-bottom:1px solid #512431}
-.logo{font-size:22px;font-weight:950;letter-spacing:.12em}.tag{font-size:10px;color:#c0aeb3;margin-top:2px}
-.bar{display:flex;gap:6px;padding:7px;background:#10070a}.btn{flex:1;border:1px solid #5b2936;border-radius:10px;padding:9px;background:#211016;color:#fff;font-weight:850}.btn.primary{background:linear-gradient(135deg,#bd2948,#700d24)}
-.viewer{flex:1;min-height:0;background:#181012}
-iframe{width:100%;height:100%;border:0;display:block}
-.install{display:none;position:fixed;left:12px;right:12px;bottom:14px;padding:14px;background:#241017;border:1px solid #7d394b;border-radius:15px;box-shadow:0 10px 30px #000b;text-align:center;z-index:5}
-.install button{margin-top:8px;width:100%}
+:root{--bg:#080506;--panel:#180b10;--panel2:#241017;--text:#fbf4f6;--muted:#c0aeb3;--red:#a91d3b}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% 0,#4b102055,transparent 40%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}button,input{font:inherit}.app{width:min(100%,560px);margin:auto;padding:10px 12px 18px}
+header{text-align:center;padding:4px 0 10px}.logo{font-size:24px;font-weight:950;letter-spacing:.12em}.tag{font-size:11px;color:var(--muted)}
+.card{background:linear-gradient(145deg,#2a1119,#10070a);border:1px solid #512431;border-radius:20px;padding:12px;box-shadow:0 13px 34px #0009;margin-bottom:9px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.three{grid-template-columns:repeat(3,1fr)}
+.btn{width:100%;border:1px solid #4b202a;background:linear-gradient(180deg,#2a121a,#1a0b10);color:#fff;border-radius:12px;padding:11px 7px;font-weight:850;min-height:44px}.primary{background:linear-gradient(135deg,#bd2948,#700d24);border-color:#df7188}
+.field{width:100%;margin:5px 0;padding:11px;border-radius:11px;border:1px solid #4b202a;background:#0d0709;color:#fff}
+.setup h2,.round h2{margin:2px 0 8px}.small{font-size:11px;color:var(--muted);line-height:1.4}
+.players{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.playing-card{width:150px;min-height:210px;margin:8px auto;border-radius:18px;background:#faf7f5;color:#161016;display:flex;flex-direction:column;justify-content:space-between;padding:12px;box-shadow:0 10px 25px #0008;border:3px solid #fff;text-align:center}
+.playing-card.red{color:#b01d3b}.rank{font-size:34px;font-weight:950}.suit{font-size:58px;line-height:1}.middle{font-size:30px}
+.deal-area{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dealbox{text-align:center}.dealbox h3{font-size:13px;margin:2px}.winner{font-weight:950;text-align:center;padding:8px;background:#2b121b;border-radius:12px}
+.task{padding:13px;border-radius:16px;background:#210d14;border:1px solid #63303d}.eyebrow{font-size:10px;letter-spacing:.13em;color:#db8fa0;font-weight:900}.task h2{font-size:20px;margin:4px 0 7px}.task p{margin:5px 0;color:#ded0d4;line-height:1.45}.timer{font-size:44px;font-weight:950;text-align:center;margin:8px 0}.rules{display:none}.rules.open{display:block}.history{max-height:170px;overflow:auto;font-size:12px;color:var(--muted)}.history div{padding:6px 0;border-bottom:1px solid #2b171d}
+@media(max-width:390px){.playing-card{width:125px;min-height:180px}.rank{font-size:28px}.suit{font-size:48px}}
 </style>
 </head>
 <body>
 <div class="app">
 <header><div class="logo">KINKY CARDS</div><div class="tag">DEAL • DRAW • DARE</div></header>
-<div class="bar">
-<button class="btn primary" id="open">OPEN GAME</button>
-<button class="btn" id="full">FULLSCREEN</button>
-</div>
-<div class="viewer"><iframe id="pdf" src="Kinky_Cards.pdf" title="Kinky Cards game"></iframe></div>
-<div class="install" id="install"><strong>Add Kinky Cards to your phone</strong><button class="btn primary" id="installBtn">INSTALL APP</button></div>
-</div>
+
+<section class="card setup" id="setup">
+<h2>Set up your game</h2>
+<div class="small">Enter the names you want displayed during the game.</div>
+<div class="players"><input id="p1" class="field" value="Player 1" maxlength="24"><input id="p2" class="field" value="Player 2" maxlength="24"></div>
+<div class="row"><button class="btn primary" id="start">START GAME</button><button class="btn" id="rulesBtn">RULES</button></div>
+<div class="small" style="margin-top:7px">The digital deck replaces the physical cards. Agree boundaries before playing.</div>
+<div class="rules" id="rules"><p>Deal one card to each player. Highest card wins. Then deal a fate card. The suit sets the timer: ♦ 30s, ♣ 60s, ♥ 90s, ♠ 120s.</p><p>Adults only. Either player can stop at any time.</p></div>
+</section>
+
+<section class="card round" id="game" style="display:none">
+<div class="row"><button class="btn" id="newGame">NEW GAME</button><button class="btn" id="fate">FATE CARD</button></div>
+<div class="deal-area" id="dealArea"></div>
+<div class="winner" id="winner"></div>
+<div id="task" style="display:none;margin-top:9px"></div>
+</section>
+
+<section class="card" id="historyBox" style="display:none">
+<h3 style="margin:2px 0 7px">Round history</h3><div class="history" id="history"></div>
+</section>
+
 <script>
-const pdf=document.getElementById("pdf");
-document.getElementById("open").onclick=()=>{pdf.src="Kinky_Cards.pdf#page=1"};
-document.getElementById("full").onclick=async()=>{try{await document.documentElement.requestFullscreen()}catch(e){}};
-let deferredPrompt;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;document.getElementById("install").style.display="block"});
-document.getElementById("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById("install").style.display="none"}};
-if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+const TASKS=[{"rank": "2", "title": "OOOH OOOH — ORAL DELIGHTS", "red": "Give", "black": "Receive"}, {"rank": "3", "title": "STAND IN LINE FOR A GOOD OLD-FASHIONED FLOGGING", "red": "Slave face down", "black": "Slave face up"}, {"rank": "4", "title": "WORSHIP AT THE FEET OF YOUR GODDESS", "red": "With your mouth", "black": "With your cock & balls"}, {"rank": "5", "title": "PRESENT YOURSELF… FOR A SPANKING", "red": "Ass", "black": "Cock & balls + ass"}, {"rank": "6", "title": "TIME TO KISS SOME ASS, SLUT", "red": "Give", "black": "Receive, then receive a butt plug"}, {"rank": "7", "title": "SLAP MY BITCH UP", "red": "Face, ass or cock & balls", "black": "Graffiti anything / anywhere on your slave"}, {"rank": "8", "title": "FEELING STRESSED?", "red": "Stress-relieving squeeze balls in a Goddess's hands", "black": "Keeping those balls on ice"}, {"rank": "9", "title": "CAGE THE BEAST", "red": "Chastity cage", "black": "Cock ring"}, {"rank": "10", "title": "HIGH FIVE", "red": "1 finger", "black": "Multiple lines = multiple fingers"}, {"rank": "J", "title": "SMASH A LINE WITH THE CHEEKY PRINCE", "red": "Free drugs — Woohoo!", "black": "Make him pay for it… somehow!"}, {"rank": "Q", "title": "JOHN THE LINE TO BEND OVER FOR YOUR QUEEN", "red": "Sensual pegging", "black": "Domination pegging"}, {"rank": "K", "title": "WORSHIP THE KING'S COCK BY TAKING A LINE OFF IT", "red": "His", "black": "Hers"}, {"rank": "A", "title": "ANYTHING YOUR DEVIOUS MIND DESIRES", "red": "Mistress's choice", "black": "Sub suggests 2 ideas for Mistress to decide from"}];
+const SUITS=[["♦","red",30],["♣","black",60],["♥","red",90],["♠","black",120]];
+const RANKS=[["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["J",11],["Q",12],["K",13],["A",14]];
+let p1="Player 1",p2="Player 2",deck=[],winner=null,currentTask=null,timer=null,seconds=0,history=[];
+
+function makeDeck(){
+ deck=[];
+ for(const s of SUITS) for(const r of RANKS) deck.push({suit:s[0],color:s[1],seconds:s[2],rank:r[0],value:r[1]});
+}
+function drawCard(){const i=Math.floor(Math.random()*deck.length);return deck.splice(i,1)[0]}
+function cardHTML(c){
+ return `<div class="playing-card ${c.color==='red'?'red':''}"><div class="rank">${c.rank}</div><div class="middle">${c.suit}</div><div class="suit">${c.suit}</div></div>`;
+}
+function startGame(){
+ p1=document.getElementById("p1").value.trim()||"Player 1";
+ p2=document.getElementById("p2").value.trim()||"Player 2";
+ makeDeck();history=[];document.getElementById("history").innerHTML="";
+ document.getElementById("setup").style.display="none";document.getElementById("game").style.display="block";document.getElementById("historyBox").style.display="block";
+ dealRound();
+}
+function dealRound(){
+ if(deck.length<3)makeDeck();
+ const a=drawCard(),b=drawCard();
+ winner=a.value>b.value?p1:b.value>a.value?p2:"Tie";
+ document.getElementById("dealArea").innerHTML=`<div class="dealbox"><h3>${p1}</h3>${cardHTML(a)}</div><div class="dealbox"><h3>${p2}</h3>${cardHTML(b)}</div>`;
+ document.getElementById("winner").textContent=winner==="Tie"?"It's a tie — deal again!":`${winner} wins the deal`;
+ document.getElementById("task").style.display="none";
+}
+function fateCard(){
+ if(deck.length===0)makeDeck();
+ const c=drawCard();
+ const t=TASKS.find(x=>x.rank===c.rank);
+ if(!t){return}
+ currentTask={...t,card:c};
+ const side=c.color==="red"?t.red:t.black;
+ document.getElementById("task").style.display="block";
+ document.getElementById("task").innerHTML=`<div class="task">
+ <div class="eyebrow">FATE CARD • ${winner==="Tie"?"NEXT ROUND":winner}</div>
+ <div style="display:flex;justify-content:center">${cardHTML(c)}</div>
+ <h2>${t.title}</h2>
+ <p><strong>${c.color==="red"?"RED":"BLACK"}:</strong> ${side}</p>
+ <p><strong>TIME:</strong> ${c.seconds} seconds</p>
+ <div class="timer" id="timer">00:${String(c.seconds).padStart(2,"0")}</div>
+ <div class="row"><button class="btn primary" id="startTimer">START TIMER</button><button class="btn" id="next">NEXT DEAL</button></div>
+ </div>`;
+ document.getElementById("startTimer").onclick=()=>startTimer(c.seconds);
+ document.getElementById("next").onclick=dealRound;
+ history.unshift(`${c.suit}${c.rank} — ${t.title} — ${c.seconds}s`);
+ document.getElementById("history").innerHTML=history.slice(0,12).map(x=>`<div>${x}</div>`).join("");
+}
+function startTimer(n){
+ clearInterval(timer);seconds=n;const el=document.getElementById("timer");
+ const tick=()=>{el.textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;if(seconds<=0){clearInterval(timer);el.textContent="TIME'S UP"}};
+ tick();timer=setInterval(()=>{seconds--;tick()},1000);
+}
+document.getElementById("start").onclick=startGame;
+document.getElementById("fate").onclick=fateCard;
+document.getElementById("newGame").onclick=()=>{document.getElementById("game").style.display="none";document.getElementById("historyBox").style.display="none";document.getElementById("setup").style.display="block";clearInterval(timer)};
+document.getElementById("rulesBtn").onclick=()=>document.getElementById("rules").classList.toggle("open");
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
-</body>
-</html>
+</body></html>
