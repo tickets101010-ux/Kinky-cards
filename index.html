@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10070a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Kinky Cards</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#080506;color:#fff;font-family:system-ui,-apple-system,sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.app{height:100%;display:flex;flex-direction:column}
+header{flex:0 0 auto;text-align:center;padding:10px 12px 8px;background:linear-gradient(180deg,#2a1119,#10070a);border-bottom:1px solid #512431}
+.logo{font-size:22px;font-weight:950;letter-spacing:.12em}.tag{font-size:10px;color:#c0aeb3;margin-top:2px}
+.bar{display:flex;gap:6px;padding:7px;background:#10070a}.btn{flex:1;border:1px solid #5b2936;border-radius:10px;padding:9px;background:#211016;color:#fff;font-weight:850}.btn.primary{background:linear-gradient(135deg,#bd2948,#700d24)}
+.viewer{flex:1;min-height:0;background:#181012}
+iframe{width:100%;height:100%;border:0;display:block}
+.install{display:none;position:fixed;left:12px;right:12px;bottom:14px;padding:14px;background:#241017;border:1px solid #7d394b;border-radius:15px;box-shadow:0 10px 30px #000b;text-align:center;z-index:5}
+.install button{margin-top:8px;width:100%}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">KINKY CARDS</div><div class="tag">DEAL • DRAW • DARE</div></header>
+<div class="bar">
+<button class="btn primary" id="open">OPEN GAME</button>
+<button class="btn" id="full">FULLSCREEN</button>
+</div>
+<div class="viewer"><iframe id="pdf" src="Kinky_Cards.pdf" title="Kinky Cards game"></iframe></div>
+<div class="install" id="install"><strong>Add Kinky Cards to your phone</strong><button class="btn primary" id="installBtn">INSTALL APP</button></div>
+</div>
+<script>
+const pdf=document.getElementById("pdf");
+document.getElementById("open").onclick=()=>{pdf.src="Kinky_Cards.pdf#page=1"};
+document.getElementById("full").onclick=async()=>{try{await document.documentElement.requestFullscreen()}catch(e){}};
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;document.getElementById("install").style.display="block"});
+document.getElementById("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById("install").style.display="none"}};
+if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
